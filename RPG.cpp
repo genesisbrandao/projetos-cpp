@@ -68,11 +68,25 @@ class Chefao : public Inimigo {
 int main() {
   srand(time(0)); // Somente para os danos aleatórios 
 
+  cout << " =========================================== " << endl;
   cout << " === BEM-VINDO AO MINI-RPG: MODO CHEFAO === " << endl;
+  cout << " =========================================== " << endl;
+
+  string nomeDoUsuario;
+  cout << "Digite seu nome aqui: ";
+  getline(cin, nomeDoUsuario);
+
+  if (nomeDoUsuario.empty()) {
+    nomeDoUsuario = "Heroi Anonimo";
+  }
+
+  Jogador heroi(nomeDoUsuario, 120, 30);
+
+  cout << "\nBoa Sorte, " << heroi.getNome() << "! Sua jornada comeca agora... " << endl;
+  cout << " =========================================== " << endl;
 
   // Inicializando nossos combatentes usando construtores
-  Jogador heroi("Heroi", 120, 30);
-  cout << "Escolha a dificuldade do combate:\n1. Normal (Orc Guerreiro)\n2. Dificil (Dragao Negro - CHEFAO)\nEscolha: ";
+    cout << "Escolha a dificuldade do combate:\n1. Normal (Orc Guerreiro)\n2. Dificil (Dragao Negro - CHEFAO)\nEscolha: ";
   int dificuldade;
   cin >> dificuldade;
 
@@ -85,8 +99,8 @@ int main() {
       monstro = new Inimigo("Orc Guerreiro", 100, 30);
       cout << "\nUm Orc Guerreiro selvagem apareceu!" << endl;
   }
-  cout << " =========================================== " << endl;
-
+    cout << " =========================================== " << endl;
+ 
   int rodada = 1;
 
   // O LOOP DA BATALHA: Continua enquanto AMBOS estiverem vivos

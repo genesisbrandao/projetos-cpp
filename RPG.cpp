@@ -2,6 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <memory>
 
 using namespace std;
 
@@ -113,22 +114,30 @@ int main() {
   int classeEscolhida;
   cin >> classeEscolhida;
 
-  Jogador* heroi = nullptr;
+  unique_ptr<Jogador> heroi = nullptr;
   bool ehMago = false;
 
   if(classeEscolhida == 2) {
-     heroi = new Mago(nomeDoUsuario, 90, 10);
+     heroi = make_unique <Mago>(nomeDoUsuario, 90, 10);
      ehMago = true;
      cout << "\n" << heroi->getNome() << " o Mago pegou seu cajado!" << endl;
   } else {
-     heroi = new Jogador(nomeDoUsuario, 120, 22);
+     heroi = make_unique<Jogador>(nomeDoUsuario, 120, 22);
      cout << "\n" << heroi->getNome() << " o Guerreiro empunhou sua espada!" << endl;
   }
 
   cout << "\nEscolha a dificuldade do combate:\n1. Normal\n2. Dificil (CHEFAO)\nEscolha: ";
   int dificuldade;  cin >> dificuldade;
-  Inimigo* monstro = (dificuldade == 2) ? (Inimigo*)new Chefao("Dragao Negro", 110, 10) : new Inimigo("Orc Guerreiro", 80, 11);
- 
+
+  unique_ptr<Inimigo> monstro = nullptr;
+  if (dificuldade == 2) {
+    monstro = make_unique<Chefao>("Dragao Negro", 110, 10);
+  } else {
+    monstro = make_unique<Inimigo>("Orc Guerreiro", 80, 11);
+  }
+  cout << "\nUm " << monstro->getTipo() << " selvagem apareceu!" << endl;
+  cout << "=======================================" << endl;
+
   int rodada = 1;
 
   // O LOOP DA BATALHA: Continua enquanto AMBOS estiverem vivos
@@ -137,7 +146,7 @@ int main() {
     cout << heroi->getNome() << " (Vida: " << heroi->getVida();
     if (ehMago) {
 
-       cout << " | Mana: " << static_cast<Mago*>(heroi)->getMana();
+       cout << " | Mana: " << static_cast<Mago*>(heroi.get())->getMana();
     }
     cout << ") vs " << monstro->getTipo() << "(Vida: " << monstro->getVida() << ")" << endl;
 
@@ -157,18 +166,18 @@ int main() {
     int danoDoInimigo = monstro->atacar();
 
     if (acao == 1) {
-        danoDoHeroi = heroi->atacar();
+       danoDoHeroi = heroi->atacar();
         monstro->setVida(monstro->getVida() - danoDoHeroi);
         cout << "-> " << heroi->getNome() << " atacou e causou " << danoDoHeroi << " de dano!" << endl;
     }
     else if (acao == 2 && ehMago) {
-         danoDoHeroi = static_cast<Mago*>(heroi)->lancarBolaDeFogo();
+         danoDoHeroi = static_cast<Mago*>(heroi.get())->lancarBolaDeFogo();
          monstro->setVida(monstro->getVida() - danoDoHeroi);
         // Turno do Jogador Defendendo
         cout << "-> " << monstro->getTipo() << " sofreu " << danoDoHeroi << " de dano magico!" << endl;
     }
     else if (acao == 3 && ehMago) {
-         static_cast<Mago*>(heroi)->curar();
+         static_cast<Mago*>(heroi.get())->curar();
          danoDoHeroi = 0;
     }
     else {
@@ -200,7 +209,5 @@ int main() {
     else cout << "GAME OVER! O Chefao destruiu suas esperancas." << endl;
     cout << "=====================================" << endl;
 
-    delete monstro;
-    delete heroi;
     return 0;
 }
